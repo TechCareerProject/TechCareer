@@ -68,7 +68,7 @@ namespace TechCareer.API.Controllers
                 return BadRequest(ModelState);
 
             var createdEvent = await _eventService.AddAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdEvent.Id }, createdEvent);
+            return CreatedAtAction(nameof(GetById), new { id = createdEvent.id }, createdEvent);
         }
 
         // Event Güncelleme
