@@ -1,6 +1,8 @@
-﻿namespace Core.Security.Entities;
+﻿using Core.Persistence.Repositories.Entities;
 
-public class Instructor
+namespace Core.Security.Entities;
+
+public class Instructor : Entity<Guid>
 {
     public string Name { get; set; }
     public string About { get; set; }
