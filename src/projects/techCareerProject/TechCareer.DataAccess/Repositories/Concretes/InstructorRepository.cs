@@ -51,4 +51,9 @@ public class InstructorRepository:IInstructorRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<Instructor> GetByIdAsync(Guid id)
+    {
+        return await _context.Instructors.FirstOrDefaultAsync(i => i.Id == id);
+    }
 }

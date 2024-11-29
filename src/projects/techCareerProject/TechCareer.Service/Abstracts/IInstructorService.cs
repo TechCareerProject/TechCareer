@@ -14,5 +14,6 @@ namespace TechCareer.Service.Abstracts
         Task AddAsync(Instructor instructor);
         Task UpdateAsync(Instructor instructor);
         Task DeleteAsync(int instructorId);
+        Task GetByIdAsync(Guid id);
     }
 }
