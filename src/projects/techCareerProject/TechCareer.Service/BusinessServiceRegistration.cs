@@ -23,6 +23,8 @@ public static class BusinessServiceRegistration
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserWithTokenService, UserWithTokenService>();
         services.AddScoped<LoggerServiceBase, FileLogger>();
+        services.AddScoped<IOperationClaimService, OperationClaimService>();
+        services.AddScoped<IEventService, EventService>();
         return services;
     }
     

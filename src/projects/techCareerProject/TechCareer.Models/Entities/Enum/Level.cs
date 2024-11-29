@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechCareer.Models.Entities;
+namespace TechCareer.Models.Entities.Enum;
 
 public enum Level
 {

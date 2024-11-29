@@ -2,10 +2,11 @@
 
 using Core.Persistence.Repositories.Entities;
 using System.Reflection.Metadata;
+using TechCareer.Models.Entities.Enum;
 
 namespace TechCareer.Models.Entities;
 
-public class videoEducation : Entity<int>
+public class VideoEducation : Entity<int>
 {
     public string Title { get; set; }
     public string Description { get; set; }
