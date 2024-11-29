@@ -10,10 +10,10 @@ namespace TechCareer.Service.Abstracts
     public interface IInstructorService
     {
         Task<IEnumerable<Instructor>> GetAllAsync();
-        Task<Instructor> GetByIdAsync(int instructorId);
+        Task<Instructor> GetByIdAsync(Guid id);
         Task AddAsync(Instructor instructor);
         Task UpdateAsync(Instructor instructor);
-        Task DeleteAsync(int instructorId);
-        Task GetByIdAsync(Guid id);
+        Task DeleteAsync(Guid instructorId);
+
     }
 }

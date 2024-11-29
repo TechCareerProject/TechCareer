@@ -21,7 +21,7 @@ public class InstructorRepository:IInstructorRepository
         return await _context.Instructors.ToListAsync();
     }
 
-    public async Task<Instructor> GetByIdAsync(int id)
+    public async Task<Instructor> GetByIdAsync(Guid id)
     {
         // ID'ye göre eğitmen getir
         return await _context.Instructors.FindAsync(id);
@@ -41,7 +41,7 @@ public class InstructorRepository:IInstructorRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         // ID'ye göre eğitmeni sil
         var instructor = await GetByIdAsync(id);
@@ -52,8 +52,5 @@ public class InstructorRepository:IInstructorRepository
         }
     }
 
-    public async Task<Instructor> GetByIdAsync(Guid id)
-    {
-        return await _context.Instructors.FirstOrDefaultAsync(i => i.Id == id);
-    }
+
 }
