@@ -41,15 +41,7 @@ builder.Services
         };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    // �zel yetkilendirme politikalar� tan�mlay�n (iste�e ba�l�)
-    options.AddPolicy("DefaultPolicy", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-    });
-});
-
+builder.Services.AddAuthorization();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -61,7 +53,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(container =>
 });
 
 var app = builder.Build();
-//app.ConfigureCustomExceptionMiddleware();
+app.ConfigureCustomExceptionMiddleware();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

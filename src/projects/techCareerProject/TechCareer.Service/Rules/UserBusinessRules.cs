@@ -12,7 +12,7 @@ public sealed class UserBusinessRules(IUserRepository _userRepository) : BaseBus
     public Task UserShouldBeExistsWhenSelected(User? user)
     {
         if (user == null)
-            throw new BusinessException(AuthMessages.UserDontExists);
+            throw new BusinessException(AuthMessages.VideoEducationDontExists);
         return Task.CompletedTask;
     }
 
@@ -20,7 +20,7 @@ public sealed class UserBusinessRules(IUserRepository _userRepository) : BaseBus
     {
         bool doesExist = await _userRepository.AnyAsync(predicate: u => u.Id == id, enableTracking: false);
         if (doesExist)
-            throw new BusinessException(AuthMessages.UserDontExists);
+            throw new BusinessException(AuthMessages.VideoEducationDontExists);
     }
 
     public Task UserPasswordShouldBeMatched(User user, string password)

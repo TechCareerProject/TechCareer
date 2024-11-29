@@ -7,8 +7,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 namespace Core.Persistence.Repositories;
 
-public class EfRepositoryBase<TEntity, TEntityId, TContext> : IAsyncRepository<TEntity, TEntityId>
-        where TEntity : Entity<TEntityId>
+public  abstract class EfRepositoryBase<TEntity, TEntityId, TContext> : IAsyncRepository<TEntity, TEntityId>
+        where TEntity : Entity<TEntityId>, new()
     where TContext : DbContext
 
 {

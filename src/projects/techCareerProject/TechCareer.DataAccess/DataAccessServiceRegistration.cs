@@ -11,10 +11,10 @@ public static class DataAccessServiceRegistration
 {
     public static IServiceCollection AddDataAccessServices(this IServiceCollection services,IConfiguration configuration)
     {
-
+        services.AddScoped<IEventRepository, EfEventRepository>();
         services.AddScoped<IUserOperationClaimRepository, UserOperationClaimRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        
+        services.AddScoped<IOperationClaimRepository,OperationClaimRepository>();
         services.AddDbContext<BaseDbContext>(opt =>
         {
             opt.UseSqlServer(configuration.GetConnectionString("SqlConnection"));
