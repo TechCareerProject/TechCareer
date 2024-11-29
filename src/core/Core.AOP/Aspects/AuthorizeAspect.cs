@@ -2,6 +2,7 @@
 using Castle.DynamicProxy;
 using Core.AOP.Helpers;
 using Core.AOP.Interceptors;
+using Core.CrossCuttingConcerns.Exceptions.ExceptionTypes;
 using Core.Security.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,6 @@ public class AuthorizeAspect : MethodInterception
                 return;
             }
         }
-        throw new AuthenticationException("Authorization Denied");
+        throw new AuthorizationException("Authorization Denied");
     }
 }
