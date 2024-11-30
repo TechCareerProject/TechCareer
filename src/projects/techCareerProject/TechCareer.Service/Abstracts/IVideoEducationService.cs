@@ -8,34 +8,24 @@ namespace TechCareer.Service.Abstracts;
 
 public interface IVideoEducationService
 {
-    Task<VideoEducation?> GetAsync(
-        Expression<Func<VideoEducation, bool>> predicate,
+    Task<VideoEducationResponseDto> AddAsync(CreateVideoEducationRequestDto dto);
+    Task<string> DeleteAsync(int id, bool permanent = false);
+    Task<VideoEducationResponseDto> UpdateAsync(int id, UpdateVideoEducationRequestDto dto);
+    Task<List<VideoEducationResponseDto>> GetListAsync(
+        Expression<Func<VideoEducation, bool>>? predicate = null,
+        Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>? orderBy = null,
         bool include = false,
         bool withDeleted = false,
         bool enableTracking = true,
-        CancellationToken cancellationToken = default
-    );
-
-
-    Task<Paginate<VideoEducation>> GetPaginateAsync(Expression<Func<VideoEducation, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+    Task<Paginate<VideoEducationResponseDto>> GetPaginateAsync(
+        Expression<Func<VideoEducation, bool>>? predicate = null,
         Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>? orderBy = null,
-        bool include = false,
+        bool include = true,
         int index = 0,
         int size = 10,
         bool withDeleted = false,
         bool enableTracking = true,
         CancellationToken cancellationToken = default);
-
-
-    Task<List<VideoEducation>> GetListAsync(Expression<Func<VideoEducation, bool>>? predicate = null,
-        Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>? orderBy = null,
-        bool include = false,
-        bool withDeleted = false,
-        bool enableTracking = true,
-        CancellationToken cancellationToken = default);
-
-
-    Task<VideoEducation> AddAsync(VideoEducation video);
-    Task<VideoEducationResponseDto> UpdateAsync(UpdateVideoEducationRequestDto dto);
-    Task<string> DeleteAsync(int Id, bool permanent = false);
+    Task<VideoEducationResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 }
