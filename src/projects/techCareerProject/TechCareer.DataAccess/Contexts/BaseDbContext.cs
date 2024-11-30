@@ -21,6 +21,7 @@ public class BaseDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
+    public DbSet<VideoEducation> VideoEducations { get; set; }
     public DbSet<Event> Events { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<OperationClaim> OperationClaims { get; set; }
