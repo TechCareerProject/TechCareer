@@ -12,6 +12,9 @@ public sealed class VideoEducationService : IVideoEducationService
     private readonly IVideoEducationRepository _videoEducationRepository;
     private readonly IMapper _mapper;
     private readonly VideoEducationBusinessRules _businessRules;
+    private IVideoEducationRepository object1;
+    private VideoEducationBusinessRules object2;
+    private IMapper object3;
 
     public VideoEducationService(
         IVideoEducationRepository videoEducationRepository,
@@ -21,6 +24,13 @@ public sealed class VideoEducationService : IVideoEducationService
         _videoEducationRepository = videoEducationRepository;
         _mapper = mapper;
         _businessRules = businessRules;
+    }
+
+    public VideoEducationService(IVideoEducationRepository object1, VideoEducationBusinessRules object2, IMapper object3)
+    {
+        this.object1 = object1;
+        this.object2 = object2;
+        this.object3 = object3;
     }
 
     //[LoggerAspect]
