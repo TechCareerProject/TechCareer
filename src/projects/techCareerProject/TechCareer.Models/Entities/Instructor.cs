@@ -1,6 +1,6 @@
 ﻿using Core.Persistence.Repositories.Entities;
 
-namespace Core.Security.Entities;
+namespace TechCareer.Models.Entities;
 
 public class Instructor : Entity<Guid>
 {

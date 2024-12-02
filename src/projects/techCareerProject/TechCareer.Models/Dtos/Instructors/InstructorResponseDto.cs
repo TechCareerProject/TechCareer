@@ -1,7 +1,7 @@
 ﻿namespace TechCareer.Models.Dtos.Instructors;
 
-public class InstructorResponseDto
+public sealed record InstructorResponseDto
 {
-    public string Name { get; set; }
-    public string About { get; set; }
+    public string Name { get; init; }
+    public string About { get; init; }
 }

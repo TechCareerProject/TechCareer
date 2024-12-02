@@ -31,6 +31,9 @@ public static class BusinessServiceRegistration
         services.AddScoped<VideoEducationBusinessRules>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<CategoryBusinessRules>();
+        services.AddScoped<IInstructorService, InstructorService>();
+        services.AddScoped<InstructorBusinessRules>();
+
         return services;
     }
     

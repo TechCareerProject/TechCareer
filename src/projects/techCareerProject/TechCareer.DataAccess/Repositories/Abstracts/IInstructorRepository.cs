@@ -1,12 +1,8 @@
-﻿using Core.Security.Entities;
+using Core.Persistence.Repositories;
+using TechCareer.Models.Entities;
 
 namespace TechCareer.DataAccess.Repositories.Abstracts;
 
-public interface IInstructorRepository
+public interface IInstructorRepository : IAsyncRepository<Instructor, Guid>
 {
-    Task<IEnumerable<Instructor>> GetAllAsync();
-    Task<Instructor> GetByIdAsync(Guid id);
-    Task AddAsync(Instructor instructor);
-    Task UpdateAsync(Instructor instructor);
-    Task DeleteAsync(Guid id);
 }
