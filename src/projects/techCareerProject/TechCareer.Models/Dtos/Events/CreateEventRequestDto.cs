@@ -8,12 +8,13 @@ namespace TechCareer.Models.Dtos.Events
 {
     public sealed record CreateEventRequestDto(
 
-        string Title, //abcgfgf
+        string Title,
         string Description,
         string ImageUrl,
         string ParticipationText,
-        int CategoryId)
+        int CategoryId
+        );
 
-    {
-    }
+
 }
+
