@@ -24,9 +24,9 @@ namespace TechCareer.DataAccess.Configurations
             builder.Property(c => c.ParticipationText).HasColumnName("ParticipationText");
             builder.Property(X => X.CategoryId).HasColumnName("CategoryId");
 
-            builder.HasOne(x => x.Category).WithMany(x => x.Events).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.category).WithMany(x => x.Events).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.NoAction);
 
-            builder.Navigation(x => x.Category).AutoInclude();
+            builder.Navigation(x => x.category).AutoInclude();
 
         }
     }

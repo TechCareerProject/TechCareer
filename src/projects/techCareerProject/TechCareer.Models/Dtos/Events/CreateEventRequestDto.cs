@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace TechCareer.Models.Dtos.Events;
 
+
 public sealed record CreateEventRequestDto(
 
 
@@ -15,4 +16,3 @@ public sealed record CreateEventRequestDto(
     string ParticipationText,
     int CategoryId
     );
-
