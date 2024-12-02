@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using TechCareer.Models.Dtos.Events;
 using TechCareer.Models.Entities;
-using TechCareer.Models.Events;
 using TechCareer.Service.Abstracts;
 
 namespace TechCareer.API.Controllers

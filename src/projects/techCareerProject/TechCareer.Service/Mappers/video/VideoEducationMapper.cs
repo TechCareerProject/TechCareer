@@ -10,8 +10,8 @@ public class VideoEducationMapper : Profile
 {
     public VideoEducationMapper()
     {
-        CreateMap<CreateVideoEducationRequestDto, videoEducation>();
-        CreateMap<videoEducation, VideoEducationResponseDto>();
-        CreateMap<UpdateVideoEducationRequestDto, videoEducation>();
+        CreateMap<CreateVideoEducationRequestDto, VideoEducation>();
+        CreateMap<VideoEducation, VideoEducationResponseDto>();
+        CreateMap<UpdateVideoEducationRequestDto, VideoEducation>();
     }
 }
