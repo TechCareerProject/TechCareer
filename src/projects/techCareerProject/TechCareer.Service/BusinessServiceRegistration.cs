@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using TechCareer.Service.Abstracts;
 using TechCareer.Service.Concretes;
+using TechCareer.Service.Rules;
 
 
 namespace TechCareer.Service;
@@ -32,6 +33,7 @@ public static class BusinessServiceRegistration
         services.AddScoped<CategoryBusinessRules>();
         services.AddScoped<IInstructorService, InstructorService>();
         services.AddScoped<InstructorBusinessRules>();
+
         return services;
     }
     
