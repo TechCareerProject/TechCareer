@@ -26,4 +26,5 @@ public class BaseDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<OperationClaim> OperationClaims { get; set; }
     public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
+    public DbSet<Instructor> Instructors { get; set; }
 }
