@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechCareer.Models.Events
+namespace TechCareer.Models.Dtos.Events
 {
     public sealed record CreateEventRequestDto(
-        
-        string Title, //att
+
+        string Title, //abcgfgf
         string Description,
         string ImageUrl,
         string ParticipationText,

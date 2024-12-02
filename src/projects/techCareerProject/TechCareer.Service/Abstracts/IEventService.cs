@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using TechCareer.Models.Dtos.Events;
 using TechCareer.Models.Dtos.Roles;
 using TechCareer.Models.Entities;
-using TechCareer.Models.Events;
 
 namespace TechCareer.Service.Abstracts
 {
