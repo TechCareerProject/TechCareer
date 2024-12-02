@@ -4,7 +4,7 @@ using AutoMapper;
 using TechCareer.Models.Dtos.VideoEducation;
 using TechCareer.Models.Entities;
 
-namespace TechCareer.Service.Mappers.video;
+namespace TechCareer.Service.Mappers;
 
 public class VideoEducationMapper : Profile
 {
