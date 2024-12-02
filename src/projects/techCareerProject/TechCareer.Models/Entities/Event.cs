@@ -10,6 +10,8 @@ namespace TechCareer.Models.Entities
 {
     public sealed class Event : Entity<Guid>
     {
+        public object Category;
+
         public string Title {  get; set; }
         public string Description { get; set; }
         public string ImageUrl {  get; set; }

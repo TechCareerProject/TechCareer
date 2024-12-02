@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Persistence.Repositories.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,8 @@ namespace TechCareer.Models.Entities;
 
 public class Category : Entity<int>
 {
+    public object Event;
+
     public string Name { get; set; }
 
 }

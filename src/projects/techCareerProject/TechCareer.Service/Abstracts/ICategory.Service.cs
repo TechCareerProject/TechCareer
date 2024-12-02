@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechCareer.Models.Categories
+namespace TechCareer.Service.Abstracts
 {
-    internal class CategoryUpdateRequestDto
+    internal class ICategory
     {
     }
 }

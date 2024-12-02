@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TechCareer.Models.Categories
+namespace TechCareer.Models.Dtos.Category
 {
-    internal class CategoryAddRequestDto
+    public sealed record UpdateCategoryRequestDto (int Id, string name)
     {
     }
 }
