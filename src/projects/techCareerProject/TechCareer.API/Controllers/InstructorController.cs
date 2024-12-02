@@ -1,12 +1,12 @@
-﻿using Core.Security.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TechCareer.Models.Dtos.Instructors;
+using TechCareer.Models.Entities;
 using TechCareer.Service.Abstracts;
 
 namespace TechCareer.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class InstructorController : ControllerBase
     {
         private readonly IInstructorService _instructorService;
@@ -16,62 +16,95 @@ namespace TechCareer.API.Controllers
             _instructorService = instructorService;
         }
 
+        // Tüm Instructorları Listeleme
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Instructor>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var instructors = await _instructorService.GetAllAsync();
-            return Ok(instructors);
+            var response = instructors.Select(i => new InstructorResponseDto
+            {
+                Name = i.Name,
+                About = i.About
+            });
+
+            return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Instructor>> GetById(Guid id)
+        // Belirli Bir Instructor Detayı
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var instructor = await _instructorService.GetByIdAsync(id);
+            try
+            {
+                var instructor = await _instructorService.GetByIdAsync(id);
+                var response = new InstructorResponseDto
+                {
+                    Name = instructor.Name,
+                    About = instructor.About
+                };
 
-            if (instructor == null)
-                return NotFound();
-
-            return Ok(instructor);
+                return Ok(response);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Instructor not found.");
+            }
         }
 
+        // Yeni Instructor Ekleme
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Instructor instructor)
+        public async Task<IActionResult> Add([FromBody] CreateInstructorRequestDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var instructor = new Instructor
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                About = dto.About
+            };
+
             await _instructorService.AddAsync(instructor);
+
             return CreatedAtAction(nameof(GetById), new { id = instructor.Id }, instructor);
         }
 
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Instructor instructor)
+        // Instructor Güncelleme
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInstructorRequestDto dto)
         {
-            if (id != instructor.Id)
+            if (id != dto.Id)
                 return BadRequest("ID mismatch.");
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingInstructor = await _instructorService.GetByIdAsync(id);
-            if (existingInstructor == null)
-                return NotFound();
+            var instructor = new Instructor
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                About = dto.About
+            };
 
-            await _instructorService.UpdateAsync(instructor); // Burada değişken ataması gerekmez.
-            return NoContent();
+            await _instructorService.UpdateAsync(instructor);
+
+            return Ok("Instructor updated successfully.");
         }
 
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid Guid)
+        // Instructor Silme
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var existingInstructor = await _instructorService.GetByIdAsync(Guid);
-            if (existingInstructor == null)
-                return NotFound();
-
-            await _instructorService.DeleteAsync(Guid);
-            return NoContent();
+            try
+            {
+                await _instructorService.DeleteAsync(id);
+                return Ok("Instructor deleted successfully.");
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Instructor not found.");
+            }
         }
     }
 }

@@ -1,39 +1,62 @@
-﻿using Core.CrossCuttingConcerns.Exceptions.ExceptionTypes;
-using Core.CrossCuttingConcerns.Rules;
-using Core.Security.Entities;
+using Core.CrossCuttingConcerns.Exceptions.ExceptionTypes;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TechCareer.DataAccess.Repositories.Abstracts;
+using TechCareer.Models.Entities;
 using TechCareer.Service.Constants;
-using TechCareer.Service.Models;
 
-namespace TechCareer.Service.Rules;
-
-public sealed class InstructorBusinessRules(IInstructorRepository _instructorRepository) : BaseBusinessRules
+namespace TechCareer.Service.Rules
 {
-    public Task InstructorShouldExistWhenSelected(Instructor? instructor)
+    public class InstructorBusinessRules
     {
-        if (instructor == null)
-            throw new BusinessException(InstructorMessages.InstructorNotFound);
-        return Task.CompletedTask;
-    }
+        private readonly IInstructorRepository _instructorRepository;
 
-    public async Task InstructorIdShouldExistWhenSelected(Guid id)
-    {
-        bool doesExist = await _instructorRepository.AnyAsync(predicate: i => i.Id == id, enableTracking: false);
-        if (!doesExist)
-            throw new BusinessException(InstructorMessages.InstructorNotFound);
-    }
+        public InstructorBusinessRules(IInstructorRepository instructorRepository)
+        {
+            _instructorRepository = instructorRepository;
+        }
 
-    public async Task InstructorEmailShouldNotExistWhenInsert(string email)
-    {
-        bool doesExist = await _instructorRepository.AnyAsync(predicate: i => i.Email == email, enableTracking: false);
-        if (doesExist)
-            throw new BusinessException(InstructorMessages.EmailAlreadyExists);
-    }
+        public async Task<Instructor> InstructorMustExist(Guid id)
+        {
+            var instructor = await _instructorRepository.GetAsync(i => i.Id == id);
+            if (instructor == null)
+            {
+                throw new KeyNotFoundException(InstructorMessages.InstructorNotFound);
+            }
+            return instructor;
+        }
 
-    public async Task InstructorEmailShouldNotExistWhenUpdate(Guid id, string email)
-    {
-        bool doesExist = await _instructorRepository.AnyAsync(predicate: i => i.Id != id && i.Email == email, enableTracking: false);
-        if (doesExist)
-            throw new BusinessException(InstructorMessages.EmailAlreadyExists);
+        public async Task InstructorNameMustBeUnique(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new BusinessException(InstructorMessages.InvalidInstructorData);
+            }
+
+            var exists = await _instructorRepository.AnyAsync(i => i.Name == name);
+            if (exists)
+            {
+                throw new BusinessException(InstructorMessages.InstructorNameAlreadyExists);
+            }
+        }
+
+        public void ValidateInstructorData(Instructor instructor)
+        {
+            if (instructor == null)
+            {
+                throw new BusinessException(InstructorMessages.InvalidInstructorData);
+            }
+
+            if (string.IsNullOrWhiteSpace(instructor.Name))
+            {
+                throw new BusinessException(InstructorMessages.InvalidInstructorData);
+            }
+
+            if (string.IsNullOrWhiteSpace(instructor.About))
+            {
+                throw new BusinessException(InstructorMessages.InvalidInstructorData);
+            }
+        }
     }
 }
