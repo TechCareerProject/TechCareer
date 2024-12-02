@@ -3,9 +3,9 @@ using Core.AOP.Aspects;
 using Core.Persistence.Extensions;
 using System.Linq.Expressions;
 using TechCareer.DataAccess.Repositories.Abstracts;
+using TechCareer.Models.Dtos.Events;
 using TechCareer.Models.Dtos.Roles;
 using TechCareer.Models.Entities;
-using TechCareer.Models.Events;
 using TechCareer.Service.Abstracts;
 using TechCareer.Service.Constants;
 using TechCareer.Service.Rules;
@@ -36,7 +36,9 @@ namespace TechCareer.Service.Concretes
             eventEntity.Id = Guid.NewGuid();
 
             var addedEvent = await _eventRepository.AddAsync(eventEntity);
-            return _mapper.Map<EventResponseDto>(addedEvent);
+
+            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(addedEvent);
+            return responseDto;
         }
 
         [LoggerAspect]
@@ -59,7 +61,8 @@ namespace TechCareer.Service.Concretes
             _mapper.Map(dto, eventEntity);
 
             var updatedEvent = await _eventRepository.UpdateAsync(eventEntity);
-            return _mapper.Map<EventResponseDto>(updatedEvent);
+            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(updatedEvent);
+            return responseDto;
         }
 
         [CacheAspect(cacheKeyTemplate: "EventList", bypassCache: false, cacheGroupKey: "Events")]
@@ -114,7 +117,8 @@ namespace TechCareer.Service.Concretes
         public async Task<EventResponseDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var eventEntity = await _businessRules.EventMustExist(id);
-            return _mapper.Map<EventResponseDto>(eventEntity);
+            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(eventEntity);
+            return responseDto;
         }
     }
 }
