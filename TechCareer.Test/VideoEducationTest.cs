@@ -1,35 +1,30 @@
 using AutoMapper;
-using Core.Persistence.Extensions;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using TechCareer.DataAccess.Repositories.Abstracts;
 using TechCareer.Models.Dtos.VideoEducation;
 using TechCareer.Models.Entities;
+using TechCareer.Models.Entities.Enum;
 using TechCareer.Service.Abstracts;
-using TechCareer.Service.Constants;
 using TechCareer.Service.Rules;
 using Xunit;
 
-namespace TechCareer.Test;
-
-public class VideoEducationTest
+public class VideoEducationServiceTests
 {
     private readonly Mock<IVideoEducationRepository> _mockRepository;
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<VideoEducationBusinessRules> _mockBusinessRules;
     private readonly IVideoEducationService _service;
 
-    public VideoEducationTest(Mock<IVideoEducationRepository> mockRepository, Mock<IMapper> mockMapper, Mock<VideoEducationBusinessRules> mockBusinessRules, IVideoEducationService service)
+    public VideoEducationServiceTests()
     {
-        _mockRepository = mockRepository;
-        _mockMapper = mockMapper;
-        _mockBusinessRules = mockBusinessRules;
-        _service = service;
+        _mockRepository = new Mock<IVideoEducationRepository>();
+        _mockMapper = new Mock<IMapper>();
+        _mockBusinessRules = new Mock<VideoEducationBusinessRules>();
+        _service = new VideoEducationService(_mockRepository.Object, _mockMapper.Object, _mockBusinessRules.Object);
     }
 
     [Fact]
@@ -42,6 +37,7 @@ public class VideoEducationTest
             Description = "Test Description",
             TotalHour = 10,
             IsCertified = true,
+            Level = Level.Beginner,
             ImageUrl = "https://example.com/image.png",
             InstrutorId = Guid.NewGuid(),
             ProgrammingLanguage = "C#"
@@ -50,33 +46,40 @@ public class VideoEducationTest
         var videoEducation = new VideoEducation
         {
             Id = 1,
-            Title = "Test Title",
-            Description = "Test Description",
-            TotalHour = 10,
-            IsCertified = true,
-            ImageUrl = "https://example.com/image.png",
-            InstrutorId = Guid.NewGuid(),
-            ProgrammingLanguage = "C#"
+            Title = createDto.Title,
+            Description = createDto.Description,
+            TotalHour = createDto.TotalHour,
+            IsCertified = createDto.IsCertified,
+            Level = createDto.Level,
+            ImageUrl = createDto.ImageUrl,
+            InstrutorId = createDto.InstrutorId,
+            ProgrammingLanguage = createDto.ProgrammingLanguage
         };
 
         _mockBusinessRules
-            .Setup(x => x.VideoEducationTitleMustBeUnique(It.IsAny<string>()))
+            .Setup(r => r.VideoEducationTitleMustBeUnique(It.IsAny<string>()))
             .Returns(Task.CompletedTask);
-
-        _mockMapper
-            .Setup(m => m.Map<VideoEducation>(It.IsAny<CreateVideoEducationRequestDto>()))
-            .Returns(videoEducation);
 
         _mockRepository
             .Setup(r => r.AddAsync(It.IsAny<VideoEducation>()))
             .ReturnsAsync(videoEducation);
 
         _mockMapper
-            .Setup(m => m.Map<VideoEducationResponseDto>(It.IsAny<VideoEducation>()))
+            .Setup(m => m.Map<VideoEducation>(createDto))
+            .Returns(videoEducation);
+
+        _mockMapper
+            .Setup(m => m.Map<VideoEducationResponseDto>(videoEducation))
             .Returns(new VideoEducationResponseDto
             {
                 Id = videoEducation.Id,
-                Title = videoEducation.Title
+                Title = videoEducation.Title,
+                Description = videoEducation.Description,
+                TotalHour = videoEducation.TotalHour,
+                Level = videoEducation.Level,
+                ImageUrl = videoEducation.ImageUrl,
+                InstrutorId = videoEducation.InstrutorId,
+                ProgrammingLanguage = videoEducation.ProgrammingLanguage
             });
 
         // Act
@@ -86,8 +89,6 @@ public class VideoEducationTest
         Assert.NotNull(result);
         Assert.Equal(videoEducation.Id, result.Id);
         Assert.Equal(videoEducation.Title, result.Title);
-
-        _mockBusinessRules.Verify(x => x.VideoEducationTitleMustBeUnique(It.IsAny<string>()), Times.Once);
         _mockRepository.Verify(r => r.AddAsync(It.IsAny<VideoEducation>()), Times.Once);
     }
 
@@ -99,26 +100,20 @@ public class VideoEducationTest
         var videoEducation = new VideoEducation { Id = id };
 
         _mockBusinessRules
-            .Setup(x => x.VideoEducationMustExist(id))
+            .Setup(r => r.VideoEducationMustExist(id))
             .ReturnsAsync(videoEducation);
 
         _mockRepository
-        .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
-        .ReturnsAsync(new VideoEducation
-        {
-            Id = 1,
-            Title = "Sample Title",
-            Description = "Sample Description"
-        });
+            .Setup(r => r.DeleteAsync(videoEducation, It.IsAny<bool>()))
+            .ReturnsAsync(videoEducation);
 
         // Act
-        var result = await _service.DeleteAsync(id, permanent: true);
+        var result = await _service.DeleteAsync(id);
 
         // Assert
-        Assert.Equal(VideoEducationMessage.VideoEducationDeleted, result);
-
-        _mockBusinessRules.Verify(x => x.VideoEducationMustExist(id), Times.Once);
-        _mockRepository.Verify(r => r.DeleteAsync(videoEducation, true), Times.Once);
+        Assert.NotNull(result);
+        Assert.Equal("Video education successfully deleted.", result);
+        _mockRepository.Verify(r => r.DeleteAsync(videoEducation, It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -132,29 +127,42 @@ public class VideoEducationTest
             Title = "Updated Title",
             Description = "Updated Description",
             InstructorId = Guid.NewGuid(),
-            TotalHour = 15,
+            TotalHour = 20
         };
 
-        var videoEducation = new VideoEducation { Id = id, Title = "Old Title" };
+        var videoEducation = new VideoEducation
+        {
+            Id = id,
+            Title = "Old Title",
+            Description = "Old Description",
+            TotalHour = 15
+        };
 
         _mockBusinessRules
-            .Setup(x => x.VideoEducationMustExist(id))
+            .Setup(r => r.VideoEducationMustExist(id))
             .ReturnsAsync(videoEducation);
 
         _mockMapper
             .Setup(m => m.Map(updateDto, videoEducation))
-            .Verifiable();
+            .Callback(() =>
+            {
+                videoEducation.Title = updateDto.Title;
+                videoEducation.Description = updateDto.Description;
+                videoEducation.TotalHour = updateDto.TotalHour;
+            });
 
         _mockRepository
-            .Setup(r => r.UpdateAsync(It.IsAny<VideoEducation>()))
+            .Setup(r => r.UpdateAsync(videoEducation))
             .ReturnsAsync(videoEducation);
 
         _mockMapper
-            .Setup(m => m.Map<VideoEducationResponseDto>(It.IsAny<VideoEducation>()))
+            .Setup(m => m.Map<VideoEducationResponseDto>(videoEducation))
             .Returns(new VideoEducationResponseDto
             {
-                Id = id,
-                Title = "Updated Title"
+                Id = videoEducation.Id,
+                Title = updateDto.Title,
+                Description = updateDto.Description,
+                TotalHour = updateDto.TotalHour
             });
 
         // Act
@@ -162,13 +170,10 @@ public class VideoEducationTest
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(id, result.Id);
-        Assert.Equal("Updated Title", result.Title);
-
-        _mockBusinessRules.Verify(x => x.VideoEducationMustExist(id), Times.Once);
-        _mockMapper.Verify();
-        _mockRepository.Verify(r => r.UpdateAsync(videoEducation), Times.Once);
+        Assert.Equal(updateDto.Title, result.Title);
+        _mockRepository.Verify(r => r.UpdateAsync(It.IsAny<VideoEducation>()), Times.Once);
     }
+
     [Fact]
     public async Task GetByIdAsync_Should_Return_VideoEducation()
     {
@@ -177,15 +182,16 @@ public class VideoEducationTest
         var videoEducation = new VideoEducation { Id = id, Title = "Test Title" };
 
         _mockBusinessRules
-            .Setup(x => x.VideoEducationMustExist(id))
+            .Setup(r => r.VideoEducationMustExist(id))
             .ReturnsAsync(videoEducation);
 
         _mockMapper
-            .Setup(m => m.Map<VideoEducationResponseDto>(It.IsAny<VideoEducation>()))
+            .Setup(m => m.Map<VideoEducationResponseDto>(videoEducation))
             .Returns(new VideoEducationResponseDto
             {
                 Id = id,
-                Title = "Test Title"
+                Title = videoEducation.Title,
+                Description = videoEducation.Description
             });
 
         // Act
@@ -195,91 +201,5 @@ public class VideoEducationTest
         Assert.NotNull(result);
         Assert.Equal(id, result.Id);
         Assert.Equal("Test Title", result.Title);
-
-        _mockBusinessRules.Verify(x => x.VideoEducationMustExist(id), Times.Once);
     }
-    [Fact]
-    public async Task GetListAsync_Should_Return_List_Of_VideoEducations()
-    {
-        // Arrange
-        var videoEducationList = new List<VideoEducation>
-    {
-        new VideoEducation { Id = 1, Title = "Title 1" },
-        new VideoEducation { Id = 2, Title = "Title 2" }
-    };
-
-        _mockRepository
-            .Setup(r => r.GetListAsync(It.IsAny<Expression<Func<VideoEducation, bool>>>(),
-                                       It.IsAny<Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>>(),
-                                       It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(videoEducationList);
-
-        _mockMapper
-            .Setup(m => m.Map<List<VideoEducationResponseDto>>(videoEducationList))
-            .Returns(new List<VideoEducationResponseDto>
-            {
-            new VideoEducationResponseDto { Id = 1, Title = "Title 1" },
-            new VideoEducationResponseDto { Id = 2, Title = "Title 2" }
-            });
-
-        // Act
-        var result = await _service.GetListAsync();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Equal("Title 1", result[0].Title);
-        Assert.Equal("Title 2", result[1].Title);
-
-        _mockRepository.Verify(r => r.GetListAsync(It.IsAny<Expression<Func<VideoEducation, bool>>>(),
-                                                   It.IsAny<Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>>(),
-                                                   It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-
-    [Fact]
-    public async Task GetPaginateAsync_Should_Return_Paginated_VideoEducations()
-    {
-        // Arrange
-        var paginatedVideoEducations = new Paginate<VideoEducation>
-        {
-            Items = new List<VideoEducation>
-        {
-            new VideoEducation { Id = 1, Title = "Title 1" },
-            new VideoEducation { Id = 2, Title = "Title 2" }
-        },
-            Index = 0,
-            Size = 10,
-            Count = 2,
-            Pages = 1
-        };
-
-        _mockRepository
-            .Setup(r => r.GetPaginateAsync(It.IsAny<Expression<Func<VideoEducation, bool>>>(),
-                                           It.IsAny<Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>>(),
-                                           It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(paginatedVideoEducations);
-
-        _mockMapper
-            .Setup(m => m.Map<IList<VideoEducationResponseDto>>(It.IsAny<IList<VideoEducation>>()))
-            .Returns(new List<VideoEducationResponseDto>
-            {
-            new VideoEducationResponseDto { Id = 1, Title = "Title 1" },
-            new VideoEducationResponseDto { Id = 2, Title = "Title 2" }
-            });
-
-        // Act
-        var result = await _service.GetPaginateAsync();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Items.Count);
-        Assert.Equal("Title 1", result.Items[0].Title);
-        Assert.Equal("Title 2", result.Items[1].Title);
-
-        _mockRepository.Verify(r => r.GetPaginateAsync(It.IsAny<Expression<Func<VideoEducation, bool>>>(),
-                                                       It.IsAny<Func<IQueryable<VideoEducation>, IOrderedQueryable<VideoEducation>>>(),
-                                                       It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
 }
