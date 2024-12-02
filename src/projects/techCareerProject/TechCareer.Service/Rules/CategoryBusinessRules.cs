@@ -36,7 +36,7 @@ namespace TechCareer.Service.Rules
             var exists = await _categoryRepository.AnyAsync(c => c.Name == name);
             if (exists)
             {
-                throw new InvalidOperationException(CategoryMessages.CategoryNameAlreadyExists);
+                throw new InvalidOperationException(CategoryMessages.CategoryTitleAlreadyExists);
             }
         }
     }
