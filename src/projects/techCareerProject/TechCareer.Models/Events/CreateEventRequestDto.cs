@@ -8,7 +8,7 @@ namespace TechCareer.Models.Events
 {
     public sealed record CreateEventRequestDto(
         
-        string Title,
+        string Title, //a
         string Description,
         string ImageUrl,
         string ParticipationText,
