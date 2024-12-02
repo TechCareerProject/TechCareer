@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\Core.Security\Core.Security.csproj" />
+    <ProjectReference Include="..\TechCareer.Models\TechCareer.Models.csproj" />
   </ItemGroup>
 
 </Project>
