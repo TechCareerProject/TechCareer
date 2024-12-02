@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Core.Persistence.Extensions;
 using Moq;
 using System;
@@ -106,9 +106,9 @@ public class VideoEducationTest
         .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
         .ReturnsAsync(new VideoEducation
         {
-        Id = 1,
-        Title = "Sample Title",
-        Description = "Sample Description"
+            Id = 1,
+            Title = "Sample Title",
+            Description = "Sample Description"
         });
 
         // Act
