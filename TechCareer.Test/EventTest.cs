@@ -120,4 +120,81 @@ public class EventServiceTests
         Assert.Equal(eventResponse.ImageUrl, result.ImageUrl);
         Assert.Equal(eventResponse.ParticipationText, result.ParticipationText);
     }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateEventSuccessfully()
+    {
+        var eventId = Guid.NewGuid();
+        var updateDto = new UpdateEventRequestDto(
+            eventId,
+            "Updated Event",
+            "Updated Description",
+            "UpdatedImage.jpg",
+            "Updated Participation Text"
+        );
+
+        var existingEvent = new Event
+        {
+            Id = eventId,
+            Title = "Old Event",
+            Description = "Old Description",
+            ImageUrl = "OldImage.jpg",
+            ParticipationText = "Old Participation Text"
+        };
+
+        _businessRulesMock.Setup(b => b.EventMustExist(eventId)).ReturnsAsync(existingEvent);
+        _mapperMock.Setup(m => m.Map(updateDto, existingEvent)).Returns(existingEvent);
+        _eventRepositoryMock.Setup(r => r.UpdateAsync(existingEvent)).ReturnsAsync(existingEvent);
+        _mapperMock.Setup(m => m.Map<EventResponseDto>(existingEvent)).Returns(new EventResponseDto
+        {
+            id = eventId,
+            Title = "Updated Event",
+            Description = "Updated Description",
+            ImageUrl = "UpdatedImage.jpg",
+            ParticipationText = "Updated Participation Text"
+        });
+
+        var result = await _eventService.UpdateAsync(eventId, updateDto);
+
+        Assert.Equal("Updated Event", result.Title);
+        Assert.Equal("Updated Description", result.Description);
+        Assert.Equal("UpdatedImage.jpg", result.ImageUrl);
+        Assert.Equal("Updated Participation Text", result.ParticipationText);
+    }
+
+    [Fact]
+    public async Task GetListAsync_ShouldReturnFilteredEventList()
+    {
+        var events = new List<Event>
+    {
+        new Event { Id = Guid.NewGuid(), Title = "Event 1" },
+        new Event { Id = Guid.NewGuid(), Title = "Event 2" }
+    };
+
+        _eventRepositoryMock.Setup(r => r.GetListAsync(null, null, false, false, true, default))
+            .ReturnsAsync(events);
+        _mapperMock.Setup(m => m.Map<List<EventResponseDto>>(events)).Returns(new List<EventResponseDto>
+    {
+        new EventResponseDto { id = events[0].Id, Title = "Event 1" },
+        new EventResponseDto { id = events[1].Id, Title = "Event 2" }
+    });
+
+        var result = await _eventService.GetListAsync();
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal("Event 1", result[0].Title);
+        Assert.Equal("Event 2", result[1].Title);
+    }
+
+    [Fact]
+    public async Task AddAsync_ShouldThrowExceptionIfTitleIsNotUnique()
+    {
+        var createDto = new CreateEventRequestDto("Duplicate Title", "Test Description", "TestImage.jpg", "Participation Text", 1);
+
+        _businessRulesMock.Setup(b => b.EventTitleMustBeUnique(createDto.Title))
+            .ThrowsAsync(new Exception("Title must be unique"));
+
+        await Assert.ThrowsAsync<Exception>(() => _eventService.AddAsync(createDto));
+    }
+
 }
