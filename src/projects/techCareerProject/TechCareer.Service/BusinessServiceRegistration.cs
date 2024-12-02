@@ -27,6 +27,7 @@ public static class BusinessServiceRegistration
         services.AddScoped<IOperationClaimService, OperationClaimService>();
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<EventBusinessRules>();
+        services.AddScoped<IVideoEducationService, VideoEducationService>();
         return services;
     }
     
