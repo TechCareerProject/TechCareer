@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TechCareer.Models.Dtos.Instructors;
 using TechCareer.Models.Entities;
 using TechCareer.Service.Abstracts;
@@ -20,14 +20,8 @@ namespace TechCareer.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var instructors = await _instructorService.GetAllAsync();
-            var response = instructors.Select(i => new InstructorResponseDto
-            {
-                Name = i.Name,
-                About = i.About
-            });
-
-            return Ok(response);
+            var instructors = await _instructorService.GetListAsync();
+            return Ok(instructors);
         }
 
         // Belirli Bir Instructor Detayı
@@ -37,13 +31,7 @@ namespace TechCareer.API.Controllers
             try
             {
                 var instructor = await _instructorService.GetByIdAsync(id);
-                var response = new InstructorResponseDto
-                {
-                    Name = instructor.Name,
-                    About = instructor.About
-                };
-
-                return Ok(response);
+                return Ok(instructor);
             }
             catch (KeyNotFoundException)
             {
@@ -58,15 +46,7 @@ namespace TechCareer.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var instructor = new Instructor
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                About = dto.About
-            };
-
-            await _instructorService.AddAsync(instructor);
-
+            var instructor = await _instructorService.AddAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = instructor.Id }, instructor);
         }
 
@@ -80,15 +60,7 @@ namespace TechCareer.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var instructor = new Instructor
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                About = dto.About
-            };
-
-            await _instructorService.UpdateAsync(instructor);
-
+            var instructor = await _instructorService.UpdateAsync(id, dto);
             return Ok("Instructor updated successfully.");
         }
 

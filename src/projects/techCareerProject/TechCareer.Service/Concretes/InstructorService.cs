@@ -107,5 +107,6 @@ namespace TechCareer.Service.Concretes
             var instructor = await _businessRules.InstructorMustExist(id);
             return _mapper.Map<InstructorResponseDto>(instructor);
         }
+
     }
 }
