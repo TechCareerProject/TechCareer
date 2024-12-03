@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Core.Security.Entities;
+using AutoMapper;
 using Moq;
 using TechCareer.DataAccess.Repositories.Abstracts;
 using TechCareer.Models.Dtos.Instructors;
@@ -42,7 +41,6 @@ public class InstructorServiceTests
 
         var instructorResponse = new InstructorResponseDto
         {
-            id = instructor.Id,
             Name = instructor.Name,
             About = instructor.About
         };
@@ -96,7 +94,6 @@ public class InstructorServiceTests
 
         var instructorResponse = new InstructorResponseDto
         {
-            id = instructorId,
             Name = "Test Instructor",
             About = "Test About"
         };
@@ -108,7 +105,6 @@ public class InstructorServiceTests
         var result = await _instructorService.GetByIdAsync(instructorId, cancellationToken);
 
         // Assert
-        Assert.Equal(instructorResponse.id, result.id);
         Assert.Equal(instructorResponse.Name, result.Name);
         Assert.Equal(instructorResponse.About, result.About);
     }
@@ -136,7 +132,6 @@ public class InstructorServiceTests
         _instructorRepositoryMock.Setup(r => r.UpdateAsync(existingInstructor)).ReturnsAsync(existingInstructor);
         _mapperMock.Setup(m => m.Map<InstructorResponseDto>(existingInstructor)).Returns(new InstructorResponseDto
         {
-            id = instructorId,
             Name = "Updated Instructor",
             About = "Updated About"
         });
@@ -173,8 +168,8 @@ public class InstructorServiceTests
         _mapperMock.Setup(m => m.Map<List<InstructorResponseDto>>(instructors))
             .Returns(new List<InstructorResponseDto>
             {
-                new InstructorResponseDto { id = instructors[0].Id, Name = "Instructor 1", About = "About 1" },
-                new InstructorResponseDto { id = instructors[1].Id, Name = "Instructor 2", About = "About 2" }
+                new InstructorResponseDto {  Name = "Instructor 1", About = "About 1" },
+                new InstructorResponseDto {  Name = "Instructor 2", About = "About 2" }
             });
 
         // Act
