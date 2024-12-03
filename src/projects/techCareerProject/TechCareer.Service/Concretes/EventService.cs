@@ -34,7 +34,6 @@ namespace TechCareer.Service.Concretes
             try
             {
                 await _businessRules.EventTitleMustBeUnique(dto.Title);
-
                 var eventEntity = _mapper.Map<Event>(dto);
                 eventEntity.Id = Guid.NewGuid();
 
@@ -119,6 +118,7 @@ namespace TechCareer.Service.Concretes
             CancellationToken cancellationToken = default)
         {
             try
+
             {
                 var events = await _eventRepository.GetPaginateAsync(
                     predicate,

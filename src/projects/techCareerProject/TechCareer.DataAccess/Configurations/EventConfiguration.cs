@@ -27,7 +27,6 @@ namespace TechCareer.DataAccess.Configurations
                    .HasForeignKey(e => e.CategoryId)
                    .OnDelete(DeleteBehavior.NoAction);
 
-            
             builder.Navigation(e => e.Category).AutoInclude();
         }
     }

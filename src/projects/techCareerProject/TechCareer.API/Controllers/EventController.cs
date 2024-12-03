@@ -8,8 +8,8 @@ namespace TechCareer.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventController(IEventService _eventService): ControllerBase
-    {
+
+    public class EventController(IEventService _eventService) : ControllerBase
 
         // Tüm Eventleri Listeleme
         [HttpGet]
@@ -43,8 +43,9 @@ namespace TechCareer.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-                var eventDetails = await _eventService.GetByIdAsync(id);
-                return Ok(eventDetails);
+            var eventDetails = await _eventService.GetByIdAsync(id);
+            return Ok(eventDetails);
+     
         }
 
         // Yeni Event Ekleme
@@ -67,8 +68,10 @@ namespace TechCareer.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, [FromQuery] bool permanent = false)
         {
-                var result = await _eventService.DeleteAsync(id, permanent);
-                return Ok(result);
+
+            var result = await _eventService.DeleteAsync(id, permanent);
+            return Ok(result);
+
         }
     }
 }

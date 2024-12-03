@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using Core.Security.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using Core.Security.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TechCareer.Models.Entities;
 
@@ -9,11 +12,11 @@ namespace TechCareer.DataAccess.Contexts;
 public class BaseDbContext : DbContext
 {
     public IConfiguration Configuration { get; set; }
-    
+
     public BaseDbContext(DbContextOptions<BaseDbContext> opt, IConfiguration configuration) : base(opt)
     {
         Configuration = configuration;
-  
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -17,7 +17,7 @@ namespace TechCareer.Models.Entities
         public DateTime EndDate { get; set; }
         public DateTime ApplicationDeadLine {  get; set; }
 
-        public string ParticipationText     { get; set; }
+        public string ParticipationText { get; set; }
 
         public int CategoryId { get; set; }
 
