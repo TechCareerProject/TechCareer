@@ -8,14 +8,8 @@ namespace TechCareer.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventController : ControllerBase
+    public class EventController(IEventService _eventService) : ControllerBase
     {
-        private readonly IEventService _eventService;
-
-        public EventController(IEventService eventService)
-        {
-            _eventService = eventService;
-        }
 
         // Tüm Eventleri Listeleme
         [HttpGet]
@@ -49,24 +43,14 @@ namespace TechCareer.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            try
-            {
-                var eventDetails = await _eventService.GetByIdAsync(id);
-                return Ok(eventDetails);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Event not found.");
-            }
+            var eventDetails = await _eventService.GetByIdAsync(id);
+            return Ok(eventDetails);
         }
 
         // Yeni Event Ekleme
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateEventRequestDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var createdEvent = await _eventService.AddAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdEvent.id }, createdEvent);
         }
@@ -75,9 +59,6 @@ namespace TechCareer.API.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEventRequestDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var updatedEvent = await _eventService.UpdateAsync(id, dto);
             return Ok(updatedEvent);
         }
@@ -86,15 +67,8 @@ namespace TechCareer.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, [FromQuery] bool permanent = false)
         {
-            try
-            {
-                var result = await _eventService.DeleteAsync(id, permanent);
-                return Ok(result);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Event not found.");
-            }
+            var result = await _eventService.DeleteAsync(id, permanent);
+            return Ok(result);
         }
     }
 }

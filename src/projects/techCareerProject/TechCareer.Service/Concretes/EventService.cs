@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.AOP.Aspects;
+using Core.CrossCuttingConcerns.Exceptions.ExceptionTypes;
 using Core.Persistence.Extensions;
 using System.Linq.Expressions;
 using TechCareer.DataAccess.Repositories.Abstracts;
@@ -30,15 +31,23 @@ namespace TechCareer.Service.Concretes
         [AuthorizeAspect("Admin")]
         public async Task<EventResponseDto> AddAsync(CreateEventRequestDto dto)
         {
-            await _businessRules.EventTitleMustBeUnique(dto.Title);
+            try
+            {
+                await _businessRules.EventTitleMustBeUnique(dto.Title);
 
-            var eventEntity = _mapper.Map<Event>(dto);
-            eventEntity.Id = Guid.NewGuid();
+                var eventEntity = _mapper.Map<Event>(dto);
+                eventEntity.Id = Guid.NewGuid();
 
-            var addedEvent = await _eventRepository.AddAsync(eventEntity);
+                var addedEvent = await _eventRepository.AddAsync(eventEntity);
 
-            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(addedEvent);
-            return responseDto;
+                EventResponseDto responseDto = _mapper.Map<EventResponseDto>(addedEvent);
+                return responseDto;
+            }
+            catch (Exception ex)
+            {
+
+                throw new BusinessException($"Error occurred while adding event: {ex.Message}", ex);
+            }
         }
 
         [LoggerAspect]
@@ -46,9 +55,16 @@ namespace TechCareer.Service.Concretes
         [AuthorizeAspect("Admin")]
         public async Task<string> DeleteAsync(Guid id, bool permanent = false)
         {
-            var eventEntity = await _businessRules.EventMustExist(id);
-            await _eventRepository.DeleteAsync(eventEntity, permanent);
-            return EventMessages.EventDeleted;
+            try
+            {
+                var eventEntity = await _businessRules.EventMustExist(id);
+                await _eventRepository.DeleteAsync(eventEntity, permanent);
+                return EventMessages.EventDeleted;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error occurred while deleting event: {ex.Message}", ex);
+            }
         }
 
         [LoggerAspect]
@@ -56,13 +72,20 @@ namespace TechCareer.Service.Concretes
         [AuthorizeAspect("Admin")]
         public async Task<EventResponseDto> UpdateAsync(Guid id, UpdateEventRequestDto dto)
         {
-            var eventEntity = await _businessRules.EventMustExist(id);
+            try
+            {
+                var eventEntity = await _businessRules.EventMustExist(id);
 
-            _mapper.Map(dto, eventEntity);
+                _mapper.Map(dto, eventEntity);
 
-            var updatedEvent = await _eventRepository.UpdateAsync(eventEntity);
-            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(updatedEvent);
-            return responseDto;
+                var updatedEvent = await _eventRepository.UpdateAsync(eventEntity);
+                EventResponseDto responseDto = _mapper.Map<EventResponseDto>(updatedEvent);
+                return responseDto;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error occurred while updating event: {ex.Message}", ex);
+            }
         }
 
         [CacheAspect(cacheKeyTemplate: "EventList", bypassCache: false, cacheGroupKey: "Events")]
@@ -74,10 +97,16 @@ namespace TechCareer.Service.Concretes
             bool enableTracking = true,
             CancellationToken cancellationToken = default)
         {
-            var events = await _eventRepository.GetListAsync(predicate, orderBy, include, withDeleted, enableTracking, cancellationToken);
-            return _mapper.Map<List<EventResponseDto>>(events);
+            try
+            {
+                var events = await _eventRepository.GetListAsync(predicate, orderBy, include, withDeleted, enableTracking, cancellationToken);
+                return _mapper.Map<List<EventResponseDto>>(events);
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error occurred while fetching event list: {ex.Message}", ex);
+            }
         }
-
 
         public async Task<Paginate<EventResponseDto>> GetPaginateAsync(
             Expression<Func<Event, bool>>? predicate = null,
@@ -89,36 +118,46 @@ namespace TechCareer.Service.Concretes
             bool enableTracking = true,
             CancellationToken cancellationToken = default)
         {
-            // Repository'den Paginate<Event> verisini alıyoruz
-            var events = await _eventRepository.GetPaginateAsync(
-                predicate,
-                orderBy,
-                include,
-                index,
-                size,
-                withDeleted,
-                enableTracking,
-                cancellationToken
-            );
-
-            // Paginate<EventResponseDto> nesnesi oluşturuyoruz
-            return new Paginate<EventResponseDto>
+            try
             {
-                Items = _mapper.Map<IList<EventResponseDto>>(events.Items),
-                Index = events.Index,
-                Size = events.Size,
-                Count = events.Count,
-                Pages = events.Pages
-            };
+                var events = await _eventRepository.GetPaginateAsync(
+                    predicate,
+                    orderBy,
+                    include,
+                    index,
+                    size,
+                    withDeleted,
+                    enableTracking,
+                    cancellationToken
+                );
+
+                return new Paginate<EventResponseDto>
+                {
+                    Items = _mapper.Map<IList<EventResponseDto>>(events.Items),
+                    Index = events.Index,
+                    Size = events.Size,
+                    Count = events.Count,
+                    Pages = events.Pages
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error occurred while fetching paginated events: {ex.Message}", ex);
+            }
         }
-
-
 
         public async Task<EventResponseDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var eventEntity = await _businessRules.EventMustExist(id);
-            EventResponseDto responseDto = _mapper.Map<EventResponseDto>(eventEntity);
-            return responseDto;
+            try
+            {
+                var eventEntity = await _businessRules.EventMustExist(id);
+                EventResponseDto responseDto = _mapper.Map<EventResponseDto>(eventEntity);
+                return responseDto;
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException($"Error occurred while fetching event by ID: {ex.Message}", ex);
+            }
         }
     }
 }

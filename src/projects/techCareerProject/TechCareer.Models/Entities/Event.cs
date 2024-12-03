@@ -19,7 +19,7 @@ namespace TechCareer.Models.Entities
 
         public string ParticipationText     { get; set; }
 
-        public Category category { get; set; }
+        public Category Category { get; set; }
         public int CategoryId { get; set; }
     }
 }
