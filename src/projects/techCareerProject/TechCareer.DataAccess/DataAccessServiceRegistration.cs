@@ -13,7 +13,10 @@ public static class DataAccessServiceRegistration
     {
         services.AddScoped<IEventRepository, EfEventRepository>();
         services.AddScoped<ICategoryRepository, EfCategoryRepository>();
+<<<<<<< HEAD
         services.AddScoped<IVideoEducationRepository, EfVideoEducationRepository>();
+=======
+>>>>>>> 716439d72e0a58805e01a0ae2e996290e82d92e6
         services.AddScoped<IUserOperationClaimRepository, UserOperationClaimRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IOperationClaimRepository,OperationClaimRepository>();

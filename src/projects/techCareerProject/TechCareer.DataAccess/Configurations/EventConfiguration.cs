@@ -21,11 +21,17 @@ namespace TechCareer.DataAccess.Configurations
             builder.Property(c => c.ParticipationText).HasColumnName("ParticipationText");
             builder.Property(c => c.CategoryId).HasColumnName("CategoryId").IsRequired();
 
+<<<<<<< HEAD
             
             builder.HasOne(e => e.Category)
                    .WithMany(c => c.Events)
                    .HasForeignKey(e => e.CategoryId)
                    .OnDelete(DeleteBehavior.NoAction);
+=======
+            builder.HasOne(x => x.Category).WithMany(x => x.Event).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.NoAction);
+
+            builder.Navigation(x => x.Category).AutoInclude();
+>>>>>>> 716439d72e0a58805e01a0ae2e996290e82d92e6
 
             
             builder.Navigation(e => e.Category).AutoInclude();

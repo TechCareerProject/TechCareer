@@ -28,4 +28,6 @@ public class BaseDbContext : DbContext
     public DbSet<OperationClaim> OperationClaims { get; set; }
     public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
+    public DbSet<Category> Categories { get; set; }
+
 }
